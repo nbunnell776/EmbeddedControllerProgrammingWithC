@@ -1,0 +1,10 @@
+10:40:58 **** Incremental Build of configuration Debug for project UCSD-Embedded-C-Assignment-1-Nathan-Bunnell ****
+make -j4 all 
+arm-none-eabi-size   UCSD-Embedded-C-Assignment-1-Nathan-Bunnell.elf 
+   text	   data	    bss	    dec	    hex	filename
+  18348	     20	   3204	  21572	   5444	UCSD-Embedded-C-Assignment-1-Nathan-Bunnell.elf
+Finished building: default.size.stdout
+ 
+
+10:40:58 Build Finished. 0 errors, 0 warnings. (took 473ms)
+

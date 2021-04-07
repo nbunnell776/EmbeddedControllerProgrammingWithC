@@ -1,0 +1,81 @@
+!SESSION 2021-04-06 18:45:39.495 -----------------------------------------------
+eclipse.buildId=Version 1.6.1
+java.version=11.0.9.1
+java.vendor=AdoptOpenJDK
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_US
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -data \\192.168.1.200\share\UC_SD_ESE\Spring2021\EmbeddedControllerProgrammingWithC\Week1
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 4 4 2021-04-06 18:45:47.487
+!MESSAGE CubeMX plugin appears to be active, Log4j initialization might be too late.
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2021-04-06 18:45:47.629
+!MESSAGE Log4j initialized with config file \\192.168.1.200\share\UC_SD_ESE\Spring2021\EmbeddedControllerProgrammingWithC\Week1\.metadata\.log4j.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2021-04-06 18:45:50.597
+!MESSAGE Started RMI Server, listening on port 41337
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 4 4 2021-04-06 18:45:51.201
+!MESSAGE com.st.stm32cube.ide.mcu.ide/META-INF/version/build_ref file not found, build reference will not be reported into properties
+
+!ENTRY org.eclipse.cdt.core 1 0 2021-04-06 18:57:48.653
+!MESSAGE Indexed 'HelloBlinkLED' (32 sources, 91 headers) in 9.7 sec: 8,183 declarations; 55,654 references; 0 unresolved inclusions; 1 syntax errors; 2 unresolved names (0.0031%)
+!SESSION 2021-04-06 21:19:46.547 -----------------------------------------------
+eclipse.buildId=Version 1.6.1
+java.version=11.0.9.1
+java.vendor=AdoptOpenJDK
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_US
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -data \\192.168.1.200\share\UC_SD_ESE\Spring2021\EmbeddedControllerProgrammingWithC\Week1
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 4 4 2021-04-06 21:19:53.165
+!MESSAGE CubeMX plugin appears to be active, Log4j initialization might be too late.
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2021-04-06 21:19:53.309
+!MESSAGE Log4j initialized with config file \\192.168.1.200\share\UC_SD_ESE\Spring2021\EmbeddedControllerProgrammingWithC\Week1\.metadata\.log4j.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2021-04-06 21:20:06.708
+!MESSAGE Started RMI Server, listening on port 41337
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 4 4 2021-04-06 21:20:07.413
+!MESSAGE com.st.stm32cube.ide.mcu.ide/META-INF/version/build_ref file not found, build reference will not be reported into properties
+!SESSION 2021-04-07 09:39:18.230 -----------------------------------------------
+eclipse.buildId=Version 1.6.1
+java.version=11.0.9.1
+java.vendor=AdoptOpenJDK
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_US
+Command-line arguments:  -os win32 -ws win32 -arch x86_64
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 4 4 2021-04-07 09:39:28.143
+!MESSAGE CubeMX plugin appears to be active, Log4j initialization might be too late.
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2021-04-07 09:39:28.290
+!MESSAGE Log4j initialized with config file \\192.168.1.200\share\UC_SD_ESE\Spring2021\EmbeddedControllerProgrammingWithC\Week1\.metadata\.log4j.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2021-04-07 09:39:40.445
+!MESSAGE Started RMI Server, listening on port 41337
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 4 4 2021-04-07 09:39:41.055
+!MESSAGE com.st.stm32cube.ide.mcu.ide/META-INF/version/build_ref file not found, build reference will not be reported into properties
+!SESSION 2021-04-07 09:44:11.453 -----------------------------------------------
+eclipse.buildId=Version 1.6.1
+java.version=11.0.9.1
+java.vendor=AdoptOpenJDK
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_US
+Command-line arguments:  -os win32 -ws win32 -arch x86_64
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 4 4 2021-04-07 09:44:29.633
+!MESSAGE CubeMX plugin appears to be active, Log4j initialization might be too late.
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2021-04-07 09:44:29.759
+!MESSAGE Log4j initialized with config file \\192.168.1.200\share\UC_SD_ESE\Spring2021\EmbeddedControllerProgrammingWithC\Week1\.metadata\.log4j.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2021-04-07 09:44:42.061
+!MESSAGE Started RMI Server, listening on port 41337
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 4 4 2021-04-07 09:44:42.667
+!MESSAGE com.st.stm32cube.ide.mcu.ide/META-INF/version/build_ref file not found, build reference will not be reported into properties
+
+!ENTRY org.eclipse.cdt.core 1 0 2021-04-07 10:22:15.339
+!MESSAGE Indexed 'UCSD-Embedded-C-Assignment-1-Nathan-Bunnell' (32 sources, 91 headers) in 9.68 sec: 8,183 declarations; 55,654 references; 0 unresolved inclusions; 1 syntax errors; 2 unresolved names (0.0031%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2021-04-07 10:36:12.983
+!MESSAGE Indexed 'UCSD-Embedded-C-Assignment-1-Nathan-Bunnell' (32 sources, 91 headers) in 5.2 sec: 8,183 declarations; 55,654 references; 0 unresolved inclusions; 1 syntax errors; 2 unresolved names (0.0031%)
