@@ -132,28 +132,20 @@ int main(void)
    * as practice w/ LL_USART
    */
 
-  // Use a char* to push data from the uint32_T variables into the serial buffer
+  // Use a char* to push data from the uint32_t variables into the serial buffer
   // byte-by-byte
-  uint8_t* dataPtr = &flashSize;
+  uint8_t* dataPtr = (uint8_t *) &flashSize;
 
   for (uint8_t i = 0; i < (sizeof(uint32_t)/sizeof(uint8_t)); i++)
   {
 	  LL_USART_TransmitData8(USART1, *(dataPtr++));
   }
 
-  dataPtr = &uidWord;
-
-  /*
-  for (uint8_t i = 0; i < ((3 * sizeof(uint32_t))/sizeof(uint8_t)); i++)
-  {
-    LL_USART_TransmitData8(USART1, (uint32_t)*(dataPtr + i));
-  }
-  */
+  dataPtr = (uint8_t *) &uidWord;
 
   for (int i = 0; i < ((3 * sizeof(uint32_t))/sizeof(uint8_t)); ++i)
 	{
-		//printf("0x%2hx\n", *(ptr++));
-		printf("%02hx", *(dataPtr++));
+	  LL_USART_TransmitData8(USART1, *(dataPtr++));
 	}
 
 
