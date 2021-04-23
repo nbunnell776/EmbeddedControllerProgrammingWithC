@@ -2,7 +2,7 @@
 # Simple git update script
 
 # Get name of dir for currrent week
-result=${{PWD##*/}}
+result=${PWD##*/}
 
 # add all files
 git add *
