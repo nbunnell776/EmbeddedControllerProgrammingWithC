@@ -400,7 +400,7 @@ int main(void)
 	  * If GPIO_PIN_RESET (button pushed): blink LED2 on a 1000mS cadence
 	  */
 
-	  if(HAL_GPIO_ReadPin(BUTTON_EXTI13_GPIO_Port, BUTTON_EXTI13_Pin))
+	  if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13))
  80004ec:	f44f 5100 	mov.w	r1, #8192	; 0x2000
  80004f0:	480c      	ldr	r0, [pc, #48]	; (8000524 <main+0x64>)
  80004f2:	f001 fb07 	bl	8001b04 <HAL_GPIO_ReadPin>
@@ -408,7 +408,7 @@ int main(void)
  80004f8:	2b00      	cmp	r3, #0
  80004fa:	d008      	beq.n	800050e <main+0x4e>
 	  {
-		  HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
+		  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_14);
  80004fc:	f44f 4180 	mov.w	r1, #16384	; 0x4000
  8000500:	4809      	ldr	r0, [pc, #36]	; (8000528 <main+0x68>)
  8000502:	f001 fb2f 	bl	8001b64 <HAL_GPIO_TogglePin>
@@ -419,14 +419,14 @@ int main(void)
 	  }
 	  else
 	  {
-		  HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
+		  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_14);
  800050e:	f44f 4180 	mov.w	r1, #16384	; 0x4000
  8000512:	4805      	ldr	r0, [pc, #20]	; (8000528 <main+0x68>)
  8000514:	f001 fb26 	bl	8001b64 <HAL_GPIO_TogglePin>
 		  HAL_Delay(1000);
  8000518:	f44f 707a 	mov.w	r0, #1000	; 0x3e8
  800051c:	f000 ff06 	bl	800132c <HAL_Delay>
-	  if(HAL_GPIO_ReadPin(BUTTON_EXTI13_GPIO_Port, BUTTON_EXTI13_Pin))
+	  if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13))
  8000520:	e7e4      	b.n	80004ec <main+0x2c>
  8000522:	bf00      	nop
  8000524:	48000800 	.word	0x48000800
