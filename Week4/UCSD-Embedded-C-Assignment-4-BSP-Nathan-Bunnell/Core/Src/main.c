@@ -113,32 +113,61 @@ int main(void)
   MX_USART1_UART_Init();
   MX_USART3_UART_Init();
   MX_USB_OTG_FS_PCD_Init();
+
   /* USER CODE BEGIN 2 */
 
+  // Init the temp sensor
   BSP_TSENSOR_Init();
-  int count = 0;
+
+  // Declare a counter variable
+  int count = 1;
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
+
   /* USER CODE BEGIN WHILE */
+
+  /* Configure User push-button */
+  BSP_PB_Init(BUTTON_USER, BUTTON_MODE_GPIO);
+
   while (1)
   {
-    /* USER CODE END WHILE */
+		/* USER CODE END WHILE */
 
-    /* USER CODE BEGIN 3 */
+		/* USER CODE BEGIN 3 */
 
-	  float temperature = BSP_TSENSOR_ReadTemp();
-	  int value = temperature;
+		/*
+		TODO
+		Compare sensor readings to thermocouple on meter
+		or those cheap import thermostats
+		Can the float temperature be declared as an int and cast as a float fir the read?
+		*/
 
-	  char buffer[100];
-	  snprintf(buffer, sizeof(buffer), "%d. %dC\n", count, value);
-	  HAL_UART_Transmit(&huart1, (uint8_t *)buffer, strlen(buffer), 1000);
+		// Read the temp sensor, trim the mantissa to give us an int reading
+		float temperature = BSP_TSENSOR_ReadTemp();
+		int value = temperature;
 
-	  HAL_Delay(1000);
+		// Send value over serial port with current count value
+		char buffer[100];
+		snprintf(buffer, sizeof(buffer), "Loop #%d. HST221 reading %d degrees C\n", count, value);
+		HAL_UART_Transmit(&huart1, (uint8_t *)buffer, strlen(buffer), 1000);
 
-	  count++;
-  }
+		// Get status of blue button and set LED on if pressed, off if not
+		if (BSP_PB_GetState(BUTTON_USER))
+		{
+			BSP_LED_Off(LED2);
+		}
+		else
+		{
+			BSP_LED_On(LED2);
+		}
+
+		// Delay 1 sec, increment counter, loop
+		HAL_Delay(1000);
+		count++;
+	}
+
   /* USER CODE END 3 */
 }
 
