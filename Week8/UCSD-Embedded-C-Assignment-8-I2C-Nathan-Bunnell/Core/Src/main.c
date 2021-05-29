@@ -37,8 +37,10 @@
 /* USER CODE BEGIN PD */
 
 // Define R/W addresses for temp sensor
-#define HST221_READ_ADDRESS 0xbf
-#define HST221_WRITE_ADDRESS 0xbe
+#define HTS221_READ_ADDRESS 0xbf
+#define HTS221_WRITE_ADDRESS 0xbe
+#define LPS22HB_READ_ADDRESS 0xbb
+#define LPS22HB_WRITE_ADDRESS 0xba
 
 /* USER CODE END PD */
 
@@ -65,6 +67,19 @@ PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
 /* USER CODE BEGIN PV */
 
+// Global calibration variable declarations
+uint8_t H0_rH_Value;
+uint8_t H1_rH_Value;
+int16_t H0_T0_OUT_Value;
+int16_t H1_T0_OUT_Value;
+
+uint8_t T0_degC_Value;
+uint8_t T1_degC_Value;
+uint8_t T0_degC;
+uint8_t T1_degC;
+int16_t T0_OUT_Value;
+int16_t T1_OUT_Value;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -80,28 +95,107 @@ static void MX_USART3_UART_Init(void);
 static void MX_USB_OTG_FS_PCD_Init(void);
 /* USER CODE BEGIN PFP */
 
-static void HST221_pwr_en(void);
-static void get_data_HST221(void);
+static void HTS221_pwr_en(void);
+static void HTS221_get_cal_data(void);
+static void HTS221_get_sensor_data(void);
+static void LPS22HB_get_sensor_data(void);
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-static void HST221_pwr_en(void)
+static void HTS221_pwr_en(void)
 {
 	// Configure control register 1 (CTRL_REG1, 0x20) bit 7 to enable one-shot
     uint8_t ctrlReg1 = 0x20;
     uint8_t ctrlData[] = {ctrlReg1, (1 << 7)};
 
     // Send the target register to the device
-    HAL_I2C_Master_Transmit(&hi2c2, HST221_WRITE_ADDRESS, ctrlData, sizeof(ctrlData), 1000);
+    HAL_I2C_Master_Transmit(&hi2c2, HTS221_WRITE_ADDRESS, ctrlData, sizeof(ctrlData), 1000);
 
 }
 
-static void get_data_HST221(void)
+static void HTS221_get_cal_data(void)
 {
-    // Large-ish char buffer for strings sent over the console
+    /*****************************************************************************************************************/
+    // Request humidity and temperature calibration data stored in registers 0x30 to 0x3F
+    // Reference pg. 26 of data sheet (https://www.st.com/resource/en/datasheet/hts221.pdf)
+    //   for register names and definitions
+    // Reference tech note TN1218 on calibration procedures
+    // https://www.st.com/resource/en/technical_note/dm00208001-interpreting-humidity-and-temperature-readings-in-the-hts221-digital-humidity-sensor-stmicroelectronics.pdf
+
+    /*****************************************************************************************************************/
+    // Humidity calibration values
+
+    // Register H0_rh_x2, address 0x30. Divide register value by 2 for calibration value
+    uint8_t H0_rH_Address = 0x30;
+	HAL_I2C_Master_Transmit(&hi2c2, HTS221_WRITE_ADDRESS, &H0_rH_Address, sizeof(H0_rH_Address), 1000);
+	H0_rH_Value = 0xff; // Junk default value
+	HAL_I2C_Master_Receive(&hi2c2, HTS221_READ_ADDRESS, (uint8_t *)&H0_rH_Value, sizeof(H0_rH_Value), 1000);
+	H0_rH_Value = H0_rH_Value / 2;
+
+	// Register H1_rh_x2, address 0x31. Divide register value by 2 for calibration value
+	uint8_t H1_rH_Address = 0x31;
+	HAL_I2C_Master_Transmit(&hi2c2, HTS221_WRITE_ADDRESS, &H1_rH_Address, sizeof(H1_rH_Address), 1000);
+	H1_rH_Value = 0xff; // Junk default value
+	HAL_I2C_Master_Receive(&hi2c2, HTS221_READ_ADDRESS, (uint8_t *)&H1_rH_Value, sizeof(H1_rH_Value), 1000);
+	H1_rH_Value = H1_rH_Value / 2;
+
+	// Register H0_T0_OUT, addresses 0x36 and 0x37
+	uint8_t H0_T0_OUT_Address = 0x36 | 0x80;
+	HAL_I2C_Master_Transmit(&hi2c2, HTS221_WRITE_ADDRESS, &H0_T0_OUT_Address, sizeof(H0_T0_OUT_Address), 1000);
+	H0_T0_OUT_Value = 0xffff; // Junk default value
+	HAL_I2C_Master_Receive(&hi2c2, HTS221_READ_ADDRESS, (uint8_t *)&H0_T0_OUT_Value, sizeof(H0_T0_OUT_Value), 1000);
+
+	// Register H1_T0_OUT, addresses 0x3A and 0x3B
+	uint8_t H1_T0_OUT_Address = 0x3A | 0x80;
+	HAL_I2C_Master_Transmit(&hi2c2, HTS221_WRITE_ADDRESS, &H1_T0_OUT_Address, sizeof(H1_T0_OUT_Address), 1000);
+	H1_T0_OUT_Value = 0xffff; // Junk default value
+	HAL_I2C_Master_Receive(&hi2c2, HTS221_READ_ADDRESS, (uint8_t *)&H1_T0_OUT_Value, sizeof(H1_T0_OUT_Value), 1000);
+
+    /*****************************************************************************************************************/
+    // Temperature calibration values
+
+    // Register T0_degC_x8, address 0x32. Divide register value by 8 for calibration value
+    uint8_t T0_degC_Address = 0x32;
+	HAL_I2C_Master_Transmit(&hi2c2, HTS221_WRITE_ADDRESS, &T0_degC_Address, sizeof(T0_degC_Address), 1000);
+	T0_degC_Value = 0xff; // Junk default value
+	HAL_I2C_Master_Receive(&hi2c2, HTS221_READ_ADDRESS, (uint8_t *)&T0_degC_Value, sizeof(T0_degC_Value), 1000);
+	T0_degC_Value = T0_degC_Value / 8;
+
+    // Register T1_degC_x8, address 0x33. Divide register value by 8 for calibration value
+    uint8_t T1_degC_Address = 0x33;
+	HAL_I2C_Master_Transmit(&hi2c2, HTS221_WRITE_ADDRESS, &T1_degC_Address, sizeof(T1_degC_Address), 1000);
+	T1_degC_Value = 0xff; // Junk default value
+	HAL_I2C_Master_Receive(&hi2c2, HTS221_READ_ADDRESS, (uint8_t *)&T1_degC_Value, sizeof(T1_degC_Value), 1000);
+	T1_degC_Value = T1_degC_Value / 8;
+
+    // Register T1/T0 msb, address 0x35. Mask bits (0 & 1), (2 & 3) to get values of T0_degC & T1_degC
+    uint8_t T1_T0_msb_Address = 0x35;
+	HAL_I2C_Master_Transmit(&hi2c2, HTS221_WRITE_ADDRESS, &T1_T0_msb_Address, sizeof(T1_T0_msb_Address), 1000);
+	uint8_t T1_T0_msb_Value = 0xff; // Junk default value
+	HAL_I2C_Master_Receive(&hi2c2, HTS221_READ_ADDRESS, (uint8_t *)&T1_T0_msb_Value, sizeof(T1_T0_msb_Value), 1000);
+	T0_degC = (T1_T0_msb_Value && (0b0011));
+    T1_degC = (T1_T0_msb_Value && (0b1100));
+
+    // Register T0_OUT, addresses 0x3C and 0x3D
+	uint8_t T0_OUT_Address = 0x3C | 0x80;
+	HAL_I2C_Master_Transmit(&hi2c2, HTS221_WRITE_ADDRESS, &T0_OUT_Address, sizeof(T0_OUT_Address), 1000);
+	T0_OUT_Value = 0xffff; // Junk default value
+	HAL_I2C_Master_Receive(&hi2c2, HTS221_READ_ADDRESS, (uint8_t *)&T0_OUT_Value, sizeof(T0_OUT_Value), 1000);
+
+    // Register T1_OUT, addresses 0x3C and 0x3D
+	uint8_t T1_OUT_Address = 0x3C | 0x80;
+	HAL_I2C_Master_Transmit(&hi2c2, HTS221_WRITE_ADDRESS, &T1_OUT_Address, sizeof(T1_OUT_Address), 1000);
+	T1_OUT_Value = 0xffff; // Junk default value
+	HAL_I2C_Master_Receive(&hi2c2, HTS221_READ_ADDRESS, (uint8_t *)&T1_OUT_Value, sizeof(T1_OUT_Value), 1000);
+
+}
+
+static void HTS221_get_sensor_data(void)
+{
+    // Large char buffer for strings sent over the console
     char buffer[100] = {0};
 
 	// Configure control register 2 (CTRL_REG2, 0x21) bit 0 to enable one-shot
@@ -109,42 +203,7 @@ static void get_data_HST221(void)
     uint8_t ctrlData[] = {ctrlReg2, (1 << 0)};
 
     // Send the target register to the device
-    HAL_I2C_Master_Transmit(&hi2c2, HST221_WRITE_ADDRESS, ctrlData, sizeof(ctrlData), 1000);
-
-    // Request humidity and temperature calibration data stored in registers 0x30 to 0x3F
-    // Reference pg. 26 of data sheet (https://www.st.com/resource/en/datasheet/hts221.pdf)
-    //   for register names and definitions
-    // Reference tech note
-    // https://www.st.com/resource/en/technical_note/dm00208001-interpreting-humidity-and-temperature-readings-in-the-hts221-digital-humidity-sensor-stmicroelectronics.pdf
-    // on calibration procedures
-
-    // Humidity calibration values
-
-    // Register H0_rh_x2, address 0x30. Divide register value by 2 for calibration value
-    uint8_t H0_rH_Address = 0x30;
-	HAL_I2C_Master_Transmit(&hi2c2, HST221_WRITE_ADDRESS, &H0_rH_Address, sizeof(H0_rH_Address), 1000);
-	uint8_t H0_rH_Value = 0xff; // Junk default value
-	HAL_I2C_Master_Receive(&hi2c2, HST221_READ_ADDRESS, (uint8_t *)&H0_rH_Value, sizeof(H0_rH_Value), 1000);
-	H0_rH_Value = H0_rH_Value / 2;
-
-	// Register H1_rh_x2, address 0x31. Divide register value by 2 for calibration value
-	uint8_t H1_rH_Address = 0x31;
-	HAL_I2C_Master_Transmit(&hi2c2, HST221_WRITE_ADDRESS, &H1_rH_Address, sizeof(H1_rH_Address), 1000);
-	uint8_t H1_rH_Value = 0xff; // Junk default value
-	HAL_I2C_Master_Receive(&hi2c2, HST221_READ_ADDRESS, (uint8_t *)&H1_rH_Value, sizeof(H1_rH_Value), 1000);
-	H0_rH_Value = H0_rH_Value / 2;
-
-	// Register H0_T0_OUT, addresses 0x36 and 0x37
-	uint8_t H0_T0_OUT_Address = 0x36 | 0x80;
-	HAL_I2C_Master_Transmit(&hi2c2, HST221_WRITE_ADDRESS, &H0_T0_OUT_Address, sizeof(H0_T0_OUT_Address), 1000);
-	int16_t H0_T0_OUT_Value = 0xffff; // Junk default value
-	HAL_I2C_Master_Receive(&hi2c2, HST221_READ_ADDRESS, (uint8_t *)&H0_T0_OUT_Value, sizeof(H0_T0_OUT_Value), 1000);
-
-	// Register H1_T0_OUT, addresses 0x3A and 0x3B
-	uint8_t H1_T0_OUT_Address = 0x3A | 0x80;
-	HAL_I2C_Master_Transmit(&hi2c2, HST221_WRITE_ADDRESS, &H1_T0_OUT_Address, sizeof(H1_T0_OUT_Address), 1000);
-	int16_t H1_T0_OUT_Value = 0xffff; // Junk default value
-	HAL_I2C_Master_Receive(&hi2c2, HST221_READ_ADDRESS, (uint8_t *)&H1_T0_OUT_Value, sizeof(H1_T0_OUT_Value), 1000);
+    HAL_I2C_Master_Transmit(&hi2c2, HTS221_WRITE_ADDRESS, ctrlData, sizeof(ctrlData), 1000);
 
     // Define status register (STATUS_REG2, 0x27) bit 0 to monitor for new sample available
     uint8_t statusReg = 0x27;
@@ -152,15 +211,15 @@ static void get_data_HST221(void)
 
     // Loiter for a bit to allow time for conversion to complete and be made available
     uint8_t count = 0;
-    while (count < 10)  // 10 is an arbitrary "long enough" value, this wouldn't always be great real-world practice
+    while (count < 10)  // arbitrary "long enough" delay value
     {
         // Send the address of the status register
-        HAL_I2C_Master_Transmit(&hi2c2, HST221_WRITE_ADDRESS, &statusReg, sizeof(statusReg), 1000);
+        HAL_I2C_Master_Transmit(&hi2c2, HTS221_WRITE_ADDRESS, &statusReg, sizeof(statusReg), 1000);
 
         // Read back the value of the status register
-        HAL_I2C_Master_Receive(&hi2c2, HST221_READ_ADDRESS, (uint8_t *)&sampleReady, sizeof(sampleReady), 1000);
+        HAL_I2C_Master_Receive(&hi2c2, HTS221_READ_ADDRESS, (uint8_t *)&sampleReady, sizeof(sampleReady), 1000);
 
-        // If the new sample is ready, report it to the console and break out of while-loop...
+        // If the new sample is ready, break out of while-loop...
         if (sampleReady & 0x01)
         {
             break;
@@ -173,35 +232,74 @@ static void get_data_HST221(void)
 
     // Read the values of the humidity register H_OUT, address 0x28 and 0x29
 	uint8_t H_OUT_Address = 0x28 | 0x80;
-	HAL_I2C_Master_Transmit(&hi2c2, HST221_WRITE_ADDRESS, &H_OUT_Address, sizeof(H_OUT_Address), 1000);
+	HAL_I2C_Master_Transmit(&hi2c2, HTS221_WRITE_ADDRESS, &H_OUT_Address, sizeof(H_OUT_Address), 1000);
 	int16_t H_OUT_Value = 0xbeef; // Junk default value
-	HAL_I2C_Master_Receive(&hi2c2, HST221_READ_ADDRESS, (uint8_t *)&H_OUT_Value, sizeof(H_OUT_Value), 1000);
+	HAL_I2C_Master_Receive(&hi2c2, HTS221_READ_ADDRESS, (uint8_t *)&H_OUT_Value, sizeof(H_OUT_Value), 1000);
 
-	// Calculate value of humidity in %rH.
-	// Reference formula adapted under free-will license and with permission from
-	//   https://github.com/ControlEverythingCommunity/HTS221/blob/master/Python/HTS221.py
-
-	int16_t humidityValue = (H1_rH_Value - H0_rH_Value) * (H_OUT_Value - H0_T0_OUT_Value)/(H1_T0_OUT_Value - H0_T0_OUT_Value) + (H0_rH_Value);
-
-
+	// Calculate and print value of humidity in %rH.
+	int16_t humidityValue = (((H1_rH_Value - H0_rH_Value) * (H_OUT_Value - H0_T0_OUT_Value))/(H1_T0_OUT_Value - H0_T0_OUT_Value)) + (H0_rH_Value);
 	snprintf(buffer, sizeof(buffer), "\tHumidity: %d%%rH\n", humidityValue);
 	HAL_UART_Transmit(&huart1, (uint8_t*) buffer, strlen(buffer), 1000);
 
-	/*
 
-	// Reading the lower half of the temperature register with auto-increment enabled
-	// Send target address (OR'ing with 0x80 enables auto-inc)
-	uint8_t tempRegLSB = 0x2a | 0x80;
-	HAL_I2C_Master_Transmit(&hi2c2, HST221_WRITE_ADDRESS, &tempRegLSB, sizeof(tempRegLSB), 1000);
+	// Read the values of the temperature register T_OUT, address 0x2A and 0x2B
+	uint8_t T_OUT_Address = 0x28 | 0x80;
+	HAL_I2C_Master_Transmit(&hi2c2, HTS221_WRITE_ADDRESS, &T_OUT_Address, sizeof(T_OUT_Address), 1000);
+	int16_t T_OUT_Value = 0xbeef; // Junk default value
+	HAL_I2C_Master_Receive(&hi2c2, HTS221_READ_ADDRESS, (uint8_t *)&T_OUT_Value, sizeof(T_OUT_Value), 1000);
 
-	// Read response back for both registers and print over console
-	uint16_t tempData = 0xbeef; // Junk default value (ALSO REALLY HOT!)
-	HAL_I2C_Master_Receive(&hi2c2, HST221_READ_ADDRESS, (uint8_t *)&tempData, sizeof(tempData), 1000);
-	snprintf(buffer, sizeof(buffer), "\tTemp: 0x%04x\n\n", tempData);
+    // Calculate and print value of temperature in degC.
+	int16_t temperatureValue = (((T1_degC_Value - T0_degC_Value) * (T_OUT_Value - T0_OUT_Value))/(T1_OUT_Value - T0_OUT_Value)) + (T0_degC_Value);
+	snprintf(buffer, sizeof(buffer), "\tTemperature: %ddegC\n", temperatureValue);
 	HAL_UART_Transmit(&huart1, (uint8_t*) buffer, strlen(buffer), 1000);
 
-	*/
 }
+
+static void LPS22HB_get_sensor_data(void)
+{
+	/*****************************************************************************************************************/
+	// To read from the on-board pressure sensor, we will configure the control registers to one-shot mode and then
+	//   read the pressure value in three byte-sized chunks, shifting them into a 32-bit word that is then converted
+	//   to units of hPa, as described in the module datasheet, https://www.st.com/resource/en/datasheet/dm00140895.pdf
+	/*****************************************************************************************************************/
+
+	// Large char buffer for strings sent over the console
+	char buffer[100] = {0};
+
+	// Register CTRL_REG2, address 0x11. Configures sensor module for one-shot mode
+	uint8_t CTRL_REG2_Address = 0x11;
+	HAL_I2C_Master_Transmit(&hi2c2, LPS22HB_WRITE_ADDRESS, &CTRL_REG2_Address, sizeof(CTRL_REG2_Address), 1000);
+
+	// Register PRESS_OUT_XL, address 0x28. Pressure output value (LSB)
+	uint8_t PRESS_OUT_XL_Address = 0x28;
+	HAL_I2C_Master_Transmit(&hi2c2, LPS22HB_WRITE_ADDRESS, &PRESS_OUT_XL_Address, sizeof(PRESS_OUT_XL_Address), 1000);
+	uint8_t PRESS_OUT_XL_Value = 0xff; // Junk default value
+	HAL_I2C_Master_Receive(&hi2c2, LPS22HB_READ_ADDRESS, (uint8_t *)&PRESS_OUT_XL_Value, sizeof(PRESS_OUT_XL_Value), 1000);
+
+	// Register PRESS_OUT_L, address 0x29. Pressure output value (mid part)
+	uint8_t PRESS_OUT_L_Address = 0x29;
+	HAL_I2C_Master_Transmit(&hi2c2, LPS22HB_WRITE_ADDRESS, &PRESS_OUT_L_Address, sizeof(PRESS_OUT_L_Address), 1000);
+	uint8_t PRESS_OUT_L_Value = 0xff; // Junk default value
+	HAL_I2C_Master_Receive(&hi2c2, LPS22HB_READ_ADDRESS, (uint8_t *)&PRESS_OUT_L_Value, sizeof(PRESS_OUT_L_Value), 1000);
+
+	// Register PRESS_OUT_XL, address 0x2A. Pressure output value (MSB)
+	uint8_t PRESS_OUT_H_Address = 0x2A;
+	HAL_I2C_Master_Transmit(&hi2c2, LPS22HB_WRITE_ADDRESS, &PRESS_OUT_H_Address, sizeof(PRESS_OUT_H_Address), 1000);
+	uint8_t PRESS_OUT_H_Value = 0xff; // Junk default value
+	HAL_I2C_Master_Receive(&hi2c2, LPS22HB_READ_ADDRESS, (uint8_t *)&PRESS_OUT_H_Value, sizeof(PRESS_OUT_H_Value), 1000);
+
+	// Variable to hold raw pressure output from sensor. Shift each PRESS_OUT_x variable in as directed in datasheet
+	uint32_t PRESS_OUT_Value = (PRESS_OUT_XL_Value << 0);
+	PRESS_OUT_Value = PRESS_OUT_Value | (PRESS_OUT_L_Value << 8);
+	PRESS_OUT_Value = PRESS_OUT_Value | (PRESS_OUT_H_Value << 16);
+
+	// Divide by 4096 as per datasheet to get units hPa and print results to console
+	uint32_t pressureValue = PRESS_OUT_Value / 4096;
+	snprintf(buffer, sizeof(buffer), "\tPressure: %luhPa\n", pressureValue);
+	HAL_UART_Transmit(&huart1, (uint8_t*) buffer, strlen(buffer), 1000);
+
+}
+
 
 /* USER CODE END 0 */
 
@@ -243,12 +341,15 @@ int main(void)
   MX_USB_OTG_FS_PCD_Init();
   /* USER CODE BEGIN 2 */
 
-  // Enable the HST221 PD bit in CR1 to allow collection of samples
-      HST221_pwr_en();
+  // Enable the HTS221 PD bit in CR1 to allow collection of samples
+  HTS221_pwr_en();
 
-      // Header info for CLI
-      char* cliHeader = "\nsimpleCLI Interface v0.4\n------------------------------\n";
-      HAL_UART_Transmit(&huart1, (uint8_t*) cliHeader, strlen(cliHeader), 1000);
+  // Get the calibration data stored in the HTS221 non-volatile memory
+  HTS221_get_cal_data();
+
+  // Header info for CLI
+  char* cliHeader = "\nsimpleCLI Interface v0.4\n------------------------------\n";
+  HAL_UART_Transmit(&huart1, (uint8_t*) cliHeader, strlen(cliHeader), 1000);
 
   /* USER CODE END 2 */
 
@@ -260,7 +361,7 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 	  // Define strings to structure prompt around
-	  char* cliPrompt = "Options:\n\t1: Temperature read (HST221)\n\t2: TBD\n\t3: TBD\r\n$> ";
+	  char* cliPrompt = "Options:\n\t1: HTS221 read\n\t2: LPS22HB read\n\t3: RTC read (not implemented)\r\n$> ";
 	  char* cliResponse = "Invalid input!\r\n";
 
 	  // Issue prompt
@@ -275,19 +376,19 @@ int main(void)
 	  switch (cliInput)
 	  {
 		case '1':
-			cliResponse = "\r\nHST221 read request:\n";
+			cliResponse = "\r\nHTS221 read request:\n";
 			HAL_UART_Transmit(&huart1, (uint8_t*) cliResponse, strlen(cliResponse), 1000);
-			get_data_HST221();
+			HTS221_get_sensor_data();
 			break;
 
 		case '2':
-			cliResponse = "\r\nTBD\n";
+			cliResponse = "\r\nLPS22HB read request\n";
 			HAL_UART_Transmit(&huart1, (uint8_t*) cliResponse, strlen(cliResponse), 1000);
-			// TBD()
+			LPS22HB_get_sensor_data();
 			break;
 
 		case '3':
-			cliResponse = "\r\nTBD\n";
+			cliResponse = "\r\nRTC read *not implemented*\n";
 			HAL_UART_Transmit(&huart1, (uint8_t*) cliResponse, strlen(cliResponse), 1000);
 			// TBD()
 			break;
