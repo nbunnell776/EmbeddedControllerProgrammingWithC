@@ -109,10 +109,10 @@ static void HTS221_pwr_en(void)
 {
 	// Configure control register 1 (CTRL_REG1, 0x20) bit 7 to enable one-shot
     uint8_t ctrlReg1 = 0x20;
-    uint8_t ctrlData[] = {ctrlReg1, (1 << 7)};
+    uint8_t CTRL_REG2_Value[] = {ctrlReg1, (1 << 7)};
 
     // Send the target register to the device
-    HAL_I2C_Master_Transmit(&hi2c2, HTS221_WRITE_ADDRESS, ctrlData, sizeof(ctrlData), 1000);
+    HAL_I2C_Master_Transmit(&hi2c2, HTS221_WRITE_ADDRESS, CTRL_REG2_Value, sizeof(CTRL_REG2_Value), 1000);
 
 }
 
@@ -199,31 +199,39 @@ static void HTS221_get_sensor_data(void)
     char buffer[100] = {0};
 
 	// Configure control register 2 (CTRL_REG2, 0x21) bit 0 to enable one-shot
-    uint8_t ctrlReg2 = 0x21;
-    uint8_t ctrlData[] = {ctrlReg2, (1 << 0)};
+    uint8_t CTRL_REG2_Address = 0x21;
+    uint8_t CTRL_REG2_Value[] = {CTRL_REG2_Address, (1 << 0)};
 
     // Send the target register to the device
-    HAL_I2C_Master_Transmit(&hi2c2, HTS221_WRITE_ADDRESS, ctrlData, sizeof(ctrlData), 1000);
+    HAL_I2C_Master_Transmit(&hi2c2, HTS221_WRITE_ADDRESS, CTRL_REG2_Value, sizeof(CTRL_REG2_Value), 1000);
 
     // Define status register (STATUS_REG2, 0x27) bit 0 to monitor for new sample available
-    uint8_t statusReg = 0x27;
-    uint8_t sampleReady = 0;
+    uint8_t STATUS_Address = 0x27;
+    uint8_t STATUS_Value = 0;
+
+    // Print status message to console
+	snprintf(buffer, sizeof(buffer), "\tRequesting new sample...");
+	HAL_UART_Transmit(&huart1, (uint8_t*) buffer, strlen(buffer), 1000);
 
     // Loiter for a bit to allow time for conversion to complete and be made available
     uint8_t count = 0;
     while (count < 10)  // arbitrary "long enough" delay value
     {
         // Send the address of the status register
-        HAL_I2C_Master_Transmit(&hi2c2, HTS221_WRITE_ADDRESS, &statusReg, sizeof(statusReg), 1000);
+        HAL_I2C_Master_Transmit(&hi2c2, HTS221_WRITE_ADDRESS, &STATUS_Address, sizeof(STATUS_Address), 1000);
 
         // Read back the value of the status register
-        HAL_I2C_Master_Receive(&hi2c2, HTS221_READ_ADDRESS, (uint8_t *)&sampleReady, sizeof(sampleReady), 1000);
+        HAL_I2C_Master_Receive(&hi2c2, HTS221_READ_ADDRESS, (uint8_t *)&STATUS_Value, sizeof(STATUS_Value), 1000);
 
         // If the new sample is ready, break out of while-loop...
-        if (sampleReady & 0x01)
+        if (STATUS_Value & 0x01)
         {
             break;
         }
+
+        // Update status message on console with '.' to indicate processing
+		snprintf(buffer, sizeof(buffer), ".");
+		HAL_UART_Transmit(&huart1, (uint8_t*) buffer, strlen(buffer), 1000);
 
         // Else wait for a bit, increment the counter, and keep looping
         HAL_Delay(100);
@@ -238,7 +246,7 @@ static void HTS221_get_sensor_data(void)
 
 	// Calculate and print value of humidity in %rH.
 	int16_t humidityValue = (((H1_rH_Value - H0_rH_Value) * (H_OUT_Value - H0_T0_OUT_Value))/(H1_T0_OUT_Value - H0_T0_OUT_Value)) + (H0_rH_Value);
-	snprintf(buffer, sizeof(buffer), "\tHumidity: %d%%rH\n", humidityValue);
+	snprintf(buffer, sizeof(buffer), "\n\tHumidity: %d%%rH\n", humidityValue);
 	HAL_UART_Transmit(&huart1, (uint8_t*) buffer, strlen(buffer), 1000);
 
 
@@ -268,7 +276,39 @@ static void LPS22HB_get_sensor_data(void)
 
 	// Register CTRL_REG2, address 0x11. Configures sensor module for one-shot mode
 	uint8_t CTRL_REG2_Address = 0x11;
-	HAL_I2C_Master_Transmit(&hi2c2, LPS22HB_WRITE_ADDRESS, &CTRL_REG2_Address, sizeof(CTRL_REG2_Address), 1000);
+	uint8_t CTRL_REG2_Value[] = {CTRL_REG2_Address, (1 << 0)};
+	HAL_I2C_Master_Transmit(&hi2c2, LPS22HB_WRITE_ADDRESS, CTRL_REG2_Value, sizeof(CTRL_REG2_Value), 1000);
+
+	// Register STATUS, address 0x27. Bit 0 to monitor for new pressure sample available
+	uint8_t STATUS_Address = 0x27;
+	uint8_t STATUS_Value = 0;
+
+	// Print status message to console
+	snprintf(buffer, sizeof(buffer), "\tRequesting new sample...");
+	HAL_UART_Transmit(&huart1, (uint8_t*) buffer, strlen(buffer), 1000);
+
+	// Loiter for a bit to allow time for conversion to complete and be made available
+	while (1)
+	{
+		// Send the address of the status register
+		HAL_I2C_Master_Transmit(&hi2c2, LPS22HB_WRITE_ADDRESS, &STATUS_Address, sizeof(STATUS_Address), 1000);
+
+		// Read back the value of the status register
+		HAL_I2C_Master_Receive(&hi2c2, LPS22HB_READ_ADDRESS, (uint8_t *)&STATUS_Value, sizeof(STATUS_Value), 1000);
+
+		// If the new sample is ready, break out of while-loop...
+		if (STATUS_Value & 0x01)
+		{
+			break;
+		}
+
+		// Update status message on console with '.' to indicate processing
+		snprintf(buffer, sizeof(buffer), ".");
+		HAL_UART_Transmit(&huart1, (uint8_t*) buffer, strlen(buffer), 1000);
+
+		// Else wait for a bit, increment the counter, and keep looping
+		HAL_Delay(100);
+	}
 
 	// Register PRESS_OUT_XL, address 0x28. Pressure output value (LSB)
 	uint8_t PRESS_OUT_XL_Address = 0x28;
@@ -295,7 +335,7 @@ static void LPS22HB_get_sensor_data(void)
 
 	// Divide by 4096 as per datasheet to get units hPa and print results to console
 	uint32_t pressureValue = PRESS_OUT_Value / 4096;
-	snprintf(buffer, sizeof(buffer), "\tPressure: %luhPa\n", pressureValue);
+	snprintf(buffer, sizeof(buffer), "\n\tPressure: %luhPa\n", pressureValue);
 	HAL_UART_Transmit(&huart1, (uint8_t*) buffer, strlen(buffer), 1000);
 
 }
