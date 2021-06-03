@@ -601,7 +601,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
  8000658:	4a0b      	ldr	r2, [pc, #44]	; (8000688 <HAL_GPIO_EXTI_Callback+0x78>)
  800065a:	2164      	movs	r1, #100	; 0x64
  800065c:	f005 fc22 	bl	8005ea4 <sniprintf>
-		HAL_UART_Transmit(&huart1, (uint8_t*) buffer, strlen(buffer), 1000);
+		HAL_UART_Transmit(&huart4, (uint8_t*) buffer, strlen(buffer), 1000);
  8000660:	f107 030c 	add.w	r3, r7, #12
  8000664:	4618      	mov	r0, r3
  8000666:	f7ff fdb3 	bl	80001d0 <strlen>
@@ -619,7 +619,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
  8000682:	bd80      	pop	{r7, pc}
  8000684:	20000000 	.word	0x20000000
  8000688:	08006740 	.word	0x08006740
- 800068c:	20000650 	.word	0x20000650
+ 800068c:	200006d4 	.word	0x200006d4
 
 08000690 <do_LL_demo>:
  * but keep flashing the LED every 1 second until the Blue Button is
@@ -650,7 +650,7 @@ void do_LL_demo(void)
  80006b4:	4a29      	ldr	r2, [pc, #164]	; (800075c <do_LL_demo+0xcc>)
  80006b6:	2164      	movs	r1, #100	; 0x64
  80006b8:	f005 fbf4 	bl	8005ea4 <sniprintf>
-	HAL_UART_Transmit(&huart1, (uint8_t*) buffer, strlen(buffer), 1000);
+	HAL_UART_Transmit(&huart4, (uint8_t*) buffer, strlen(buffer), 1000);
  80006bc:	f107 0310 	add.w	r3, r7, #16
  80006c0:	4618      	mov	r0, r3
  80006c2:	f7ff fd85 	bl	80001d0 <strlen>
@@ -686,7 +686,7 @@ void do_LL_demo(void)
  8000700:	4a18      	ldr	r2, [pc, #96]	; (8000764 <do_LL_demo+0xd4>)
  8000702:	2164      	movs	r1, #100	; 0x64
  8000704:	f005 fbce 	bl	8005ea4 <sniprintf>
-	HAL_UART_Transmit(&huart1, (uint8_t*) buffer, strlen(buffer), 1000);
+	HAL_UART_Transmit(&huart4, (uint8_t*) buffer, strlen(buffer), 1000);
  8000708:	f107 0310 	add.w	r3, r7, #16
  800070c:	4618      	mov	r0, r3
  800070e:	f7ff fd5f 	bl	80001d0 <strlen>
@@ -727,7 +727,7 @@ void do_LL_demo(void)
  8000758:	46bd      	mov	sp, r7
  800075a:	bd80      	pop	{r7, pc}
  800075c:	08006758 	.word	0x08006758
- 8000760:	20000650 	.word	0x20000650
+ 8000760:	200006d4 	.word	0x200006d4
  8000764:	0800676c 	.word	0x0800676c
  8000768:	48000400 	.word	0x48000400
  800076c:	20000000 	.word	0x20000000
@@ -761,7 +761,7 @@ void do_HAL_demo(void)
  8000794:	4a25      	ldr	r2, [pc, #148]	; (800082c <do_HAL_demo+0xbc>)
  8000796:	2164      	movs	r1, #100	; 0x64
  8000798:	f005 fb84 	bl	8005ea4 <sniprintf>
-	HAL_UART_Transmit(&huart1, (uint8_t*) buffer, strlen(buffer), 1000);
+	HAL_UART_Transmit(&huart4, (uint8_t*) buffer, strlen(buffer), 1000);
  800079c:	f107 0310 	add.w	r3, r7, #16
  80007a0:	4618      	mov	r0, r3
  80007a2:	f7ff fd15 	bl	80001d0 <strlen>
@@ -797,7 +797,7 @@ void do_HAL_demo(void)
  80007e0:	4a14      	ldr	r2, [pc, #80]	; (8000834 <do_HAL_demo+0xc4>)
  80007e2:	2164      	movs	r1, #100	; 0x64
  80007e4:	f005 fb5e 	bl	8005ea4 <sniprintf>
-	HAL_UART_Transmit(&huart1, (uint8_t*) buffer, strlen(buffer), 1000);
+	HAL_UART_Transmit(&huart4, (uint8_t*) buffer, strlen(buffer), 1000);
  80007e8:	f107 0310 	add.w	r3, r7, #16
  80007ec:	4618      	mov	r0, r3
  80007ee:	f7ff fcef 	bl	80001d0 <strlen>
@@ -832,7 +832,7 @@ void do_HAL_demo(void)
  8000828:	bd80      	pop	{r7, pc}
  800082a:	bf00      	nop
  800082c:	08006780 	.word	0x08006780
- 8000830:	20000650 	.word	0x20000650
+ 8000830:	200006d4 	.word	0x200006d4
  8000834:	0800676c 	.word	0x0800676c
  8000838:	48000400 	.word	0x48000400
  800083c:	20000000 	.word	0x20000000
@@ -864,7 +864,7 @@ void do_BSP_demo(void)
  8000860:	4a13      	ldr	r2, [pc, #76]	; (80008b0 <do_BSP_demo+0x70>)
  8000862:	2164      	movs	r1, #100	; 0x64
  8000864:	f005 fb1e 	bl	8005ea4 <sniprintf>
-	HAL_UART_Transmit(&huart1, (uint8_t *)buffer, strlen(buffer), 1000);
+	HAL_UART_Transmit(&huart4, (uint8_t *)buffer, strlen(buffer), 1000);
  8000868:	1d3b      	adds	r3, r7, #4
  800086a:	4618      	mov	r0, r3
  800086c:	f7ff fcb0 	bl	80001d0 <strlen>
@@ -903,7 +903,7 @@ void do_BSP_demo(void)
  80008ac:	46bd      	mov	sp, r7
  80008ae:	bd80      	pop	{r7, pc}
  80008b0:	08006794 	.word	0x08006794
- 80008b4:	20000650 	.word	0x20000650
+ 80008b4:	200006d4 	.word	0x200006d4
  80008b8:	20000000 	.word	0x20000000
 
 080008bc <do_bonus_demo>:
@@ -919,7 +919,7 @@ void do_bonus_demo(void)
 	char* cliResponse = "\tDEMO NOT IMPLEMENTED YET\n";
  80008c2:	4b0d      	ldr	r3, [pc, #52]	; (80008f8 <do_bonus_demo+0x3c>)
  80008c4:	607b      	str	r3, [r7, #4]
-	HAL_UART_Transmit(&huart1, (uint8_t*) cliResponse, strlen(cliResponse), 1000);
+	HAL_UART_Transmit(&huart4, (uint8_t*) cliResponse, strlen(cliResponse), 1000);
  80008c6:	6878      	ldr	r0, [r7, #4]
  80008c8:	f7ff fc82 	bl	80001d0 <strlen>
  80008cc:	4603      	mov	r3, r0
@@ -948,7 +948,7 @@ void do_bonus_demo(void)
  80008f4:	46bd      	mov	sp, r7
  80008f6:	bd80      	pop	{r7, pc}
  80008f8:	080067b4 	.word	0x080067b4
- 80008fc:	20000650 	.word	0x20000650
+ 80008fc:	200006d4 	.word	0x200006d4
  8000900:	20000000 	.word	0x20000000
 
 08000904 <main>:
@@ -1035,7 +1035,7 @@ int main(void)
 	  			cliResponse = "\nLL demo:\n";
  8000964:	4b28      	ldr	r3, [pc, #160]	; (8000a08 <main+0x104>)
  8000966:	607b      	str	r3, [r7, #4]
-	  			HAL_UART_Transmit(&huart1, (uint8_t*) cliResponse, strlen(cliResponse), 1000);
+	  			HAL_UART_Transmit(&huart4, (uint8_t*) cliResponse, strlen(cliResponse), 1000);
  8000968:	6878      	ldr	r0, [r7, #4]
  800096a:	f7ff fc31 	bl	80001d0 <strlen>
  800096e:	4603      	mov	r3, r0
@@ -1053,7 +1053,7 @@ int main(void)
 	  			cliResponse = "\nHAL demo:\n";
  8000984:	4b22      	ldr	r3, [pc, #136]	; (8000a10 <main+0x10c>)
  8000986:	607b      	str	r3, [r7, #4]
-	  			HAL_UART_Transmit(&huart1, (uint8_t*) cliResponse, strlen(cliResponse), 1000);
+	  			HAL_UART_Transmit(&huart4, (uint8_t*) cliResponse, strlen(cliResponse), 1000);
  8000988:	6878      	ldr	r0, [r7, #4]
  800098a:	f7ff fc21 	bl	80001d0 <strlen>
  800098e:	4603      	mov	r3, r0
@@ -1071,7 +1071,7 @@ int main(void)
 				cliResponse = "\nBSP demo:\n";
  80009a4:	4b1b      	ldr	r3, [pc, #108]	; (8000a14 <main+0x110>)
  80009a6:	607b      	str	r3, [r7, #4]
-				HAL_UART_Transmit(&huart1, (uint8_t*) cliResponse, strlen(cliResponse), 1000);
+				HAL_UART_Transmit(&huart4, (uint8_t*) cliResponse, strlen(cliResponse), 1000);
  80009a8:	6878      	ldr	r0, [r7, #4]
  80009aa:	f7ff fc11 	bl	80001d0 <strlen>
  80009ae:	4603      	mov	r3, r0
@@ -1089,7 +1089,7 @@ int main(void)
 				cliResponse = "\nBonus demo:\n";
  80009c4:	4b14      	ldr	r3, [pc, #80]	; (8000a18 <main+0x114>)
  80009c6:	607b      	str	r3, [r7, #4]
-				HAL_UART_Transmit(&huart1, (uint8_t*) cliResponse, strlen(cliResponse), 1000);
+				HAL_UART_Transmit(&huart4, (uint8_t*) cliResponse, strlen(cliResponse), 1000);
  80009c8:	6878      	ldr	r0, [r7, #4]
  80009ca:	f7ff fc01 	bl	80001d0 <strlen>
  80009ce:	4603      	mov	r3, r0
@@ -1104,7 +1104,7 @@ int main(void)
  80009e2:	e00b      	b.n	80009fc <main+0xf8>
 
 	  		default:
-	  			HAL_UART_Transmit(&huart1, (uint8_t*) cliResponse, strlen(cliResponse), 1000);
+	  			HAL_UART_Transmit(&huart4, (uint8_t*) cliResponse, strlen(cliResponse), 1000);
  80009e4:	6878      	ldr	r0, [r7, #4]
  80009e6:	f7ff fbf3 	bl	80001d0 <strlen>
  80009ea:	4603      	mov	r3, r0
@@ -1121,7 +1121,7 @@ int main(void)
  8000a00:	20000000 	.word	0x20000000
  8000a04:	080067d0 	.word	0x080067d0
  8000a08:	080067d4 	.word	0x080067d4
- 8000a0c:	20000650 	.word	0x20000650
+ 8000a0c:	200006d4 	.word	0x200006d4
  8000a10:	080067e0 	.word	0x080067e0
  8000a14:	080067ec 	.word	0x080067ec
  8000a18:	080067f8 	.word	0x080067f8

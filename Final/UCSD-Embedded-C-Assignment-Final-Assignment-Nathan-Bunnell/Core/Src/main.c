@@ -108,7 +108,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 
 		char buffer[100] = {0};
 		snprintf(buffer, sizeof(buffer), "\nMoving to demo #%d\n", demoCount);
-		HAL_UART_Transmit(&huart1, (uint8_t*) buffer, strlen(buffer), 1000);
+		HAL_UART_Transmit(&huart4, (uint8_t*) buffer, strlen(buffer), 1000);
 	}
 }
 
@@ -129,7 +129,7 @@ void do_LL_demo(void)
 	uint32_t flashSize = LL_GetFlashSize();
 
 	snprintf(buffer, sizeof(buffer), "\tFlash size: %lu\n", flashSize);
-	HAL_UART_Transmit(&huart1, (uint8_t*) buffer, strlen(buffer), 1000);
+	HAL_UART_Transmit(&huart4, (uint8_t*) buffer, strlen(buffer), 1000);
 
 	uint32_t uidWord[3];
 	uidWord[0] = LL_GetUID_Word0();
@@ -137,7 +137,7 @@ void do_LL_demo(void)
 	uidWord[2] = LL_GetUID_Word2();
 
 	snprintf(buffer, sizeof(buffer), "\tUID: %lu%lu%lu\n", uidWord[0], uidWord[1], uidWord[2]);
-	HAL_UART_Transmit(&huart1, (uint8_t*) buffer, strlen(buffer), 1000);
+	HAL_UART_Transmit(&huart4, (uint8_t*) buffer, strlen(buffer), 1000);
 
 	while(demoCount == 1)
 	{
@@ -165,7 +165,7 @@ void do_HAL_demo(void)
 	uint32_t devID = HAL_GetDEVID();
 
 	snprintf(buffer, sizeof(buffer), "\tDevice ID: %lu\n", devID);
-	HAL_UART_Transmit(&huart1, (uint8_t*) buffer, strlen(buffer), 1000);
+	HAL_UART_Transmit(&huart4, (uint8_t*) buffer, strlen(buffer), 1000);
 
 	uint32_t uidWord[3];
 	uidWord[0] = HAL_GetUIDw0();
@@ -173,7 +173,7 @@ void do_HAL_demo(void)
 	uidWord[2] = HAL_GetUIDw2();
 
 	snprintf(buffer, sizeof(buffer), "\tUID: %lu%lu%lu\n", uidWord[0], uidWord[1], uidWord[2]);
-	HAL_UART_Transmit(&huart1, (uint8_t*) buffer, strlen(buffer), 1000);
+	HAL_UART_Transmit(&huart4, (uint8_t*) buffer, strlen(buffer), 1000);
 
 	while(demoCount == 2)
 	{
@@ -198,7 +198,7 @@ void do_BSP_demo(void)
 
 	char buffer[100];
 	snprintf(buffer, sizeof(buffer), "\tHTS221 reading %d degrees C\n", value);
-	HAL_UART_Transmit(&huart1, (uint8_t *)buffer, strlen(buffer), 1000);
+	HAL_UART_Transmit(&huart4, (uint8_t *)buffer, strlen(buffer), 1000);
 
 	while(demoCount == 3)
 	{
@@ -216,7 +216,7 @@ void do_BSP_demo(void)
 void do_bonus_demo(void)
 {
 	char* cliResponse = "\tDEMO NOT IMPLEMENTED YET\n";
-	HAL_UART_Transmit(&huart1, (uint8_t*) cliResponse, strlen(cliResponse), 1000);
+	HAL_UART_Transmit(&huart4, (uint8_t*) cliResponse, strlen(cliResponse), 1000);
 
 	while(demoCount == 4)
 	{
@@ -289,30 +289,30 @@ int main(void)
 	  	  {
 	  		case 1:
 	  			cliResponse = "\nLL demo:\n";
-	  			HAL_UART_Transmit(&huart1, (uint8_t*) cliResponse, strlen(cliResponse), 1000);
+	  			HAL_UART_Transmit(&huart4, (uint8_t*) cliResponse, strlen(cliResponse), 1000);
 	  			do_LL_demo();
 	  			break;
 
 	  		case 2:
 	  			cliResponse = "\nHAL demo:\n";
-	  			HAL_UART_Transmit(&huart1, (uint8_t*) cliResponse, strlen(cliResponse), 1000);
+	  			HAL_UART_Transmit(&huart4, (uint8_t*) cliResponse, strlen(cliResponse), 1000);
 	  			do_HAL_demo();
 	  			break;
 
 	  		case 3:
 				cliResponse = "\nBSP demo:\n";
-				HAL_UART_Transmit(&huart1, (uint8_t*) cliResponse, strlen(cliResponse), 1000);
+				HAL_UART_Transmit(&huart4, (uint8_t*) cliResponse, strlen(cliResponse), 1000);
 				do_BSP_demo();
 				break;
 
 	  		case 4:
 				cliResponse = "\nBonus demo:\n";
-				HAL_UART_Transmit(&huart1, (uint8_t*) cliResponse, strlen(cliResponse), 1000);
+				HAL_UART_Transmit(&huart4, (uint8_t*) cliResponse, strlen(cliResponse), 1000);
 				do_bonus_demo();
 				break;
 
 	  		default:
-	  			HAL_UART_Transmit(&huart1, (uint8_t*) cliResponse, strlen(cliResponse), 1000);
+	  			HAL_UART_Transmit(&huart4, (uint8_t*) cliResponse, strlen(cliResponse), 1000);
 	  			break;
 	  	  }
 
